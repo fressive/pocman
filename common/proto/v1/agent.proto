@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package proto.v1;
-option go_package = "rina.icu/pocman/common/protocol;protocol";
+option go_package = "rina.icu/pocman-common/protocol;protocol";
 
 // AgentService provides RPC methods for agent communication and monitoring.
 service AgentService {
