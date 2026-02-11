@@ -32,3 +32,13 @@ go.work.sum
 .vscode/
 
 config.yml
+
+# certificate
+*.key
+*.csr
+*.pem
+*.srl
+cert
+
+# protoc generated files
+*.pb.go

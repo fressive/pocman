@@ -11,7 +11,7 @@
 //
 // The Load function initializes the configuration by reading from a specified
 // YAML file. It also supports automatic environment variable loading with a
-// prefix of "POCMAN" and replaces dots in environment variable keys with
+// prefix of "POCMANAGENT" and replaces dots in environment variable keys with
 // underscores. If the configuration file cannot be read or unmarshalled,
 // it returns an error.
 package conf
@@ -23,9 +23,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Configuration of Pocman server
+// Configuration of Pocman agent
 type Config struct {
-	// Mode of the server, options: debug|release
+	// Agent name
+	Name string `mapstructure:"name" yaml:"name"`
+
+	// Mode of the agent, options: debug|release
 	Mode string `mapstructure:"mode" yaml:"mode"`
 
 	// Verbose mode, options: true|false
@@ -37,26 +40,23 @@ type Config struct {
 
 type Server struct {
 	// Host of the server, example: 127.0.0.1
-	Host string `mapstructure:"host" yaml:"host"`
+	Host *string `mapstructure:"host" yaml:"host"`
 
-	// Port of the server, example: 5031
-	Port int `mapstructure:"port" yaml:"port"`
+	// gRPC port of the server, example: 5032
+	Port *int `mapstructure:"port" yaml:"port"`
 
-	// Port where the Agent gRPC service listens. Falls back to HTTP port + 1 when zero.
-	GRPCPort int `mapstructure:"grpc_port" yaml:"grpc_port"`
-
-	// The certificate used to authenticate agents and enable TLS
+	// Certificates to authenticate the identity
 	GRPCCert *Certificate `mapstructure:"grpc_cert" yaml:"grpc_cert"`
 
-	// Token to authenticate agents (not recommended)
-	GRPCToken string `mapstructure:"grpc_token" yaml:"grpc_token"`
+	// Agent token (not recommended)
+	GRPCToken *string `mapstructure:"grpc_token" yaml:"grpc_token"`
 }
 
 type Certificate struct {
-	// Server certificate to authenticate agents, exmaple: cert/server.pem
+	// Agent certificate file, exmaple: cert/agent.pem
 	Cert string `mapstructure:"cert" yaml:"cert"`
 
-	// Key file to certificate, example: cert/server.key
+	// Key file to certificate, example: cert/agent.key
 	Key string `mapstructure:"key" yaml:"key"`
 
 	// Self-signed CA certificate, example: cert/ca.pem
@@ -75,14 +75,10 @@ type Database struct {
 	Source string `mapstructure:"source" yaml:"source"`
 }
 
-var ServerConfig = Config{
+var AgentConfig = Config{
 	Mode:    "debug",
 	Verbose: true,
-	Server: &Server{
-		Host:     "127.0.0.1",
-		Port:     5031,
-		GRPCPort: 5032,
-	},
+
 	Data: &Data{
 		Database: &Database{
 			Driver: "sqlite",
@@ -102,7 +98,7 @@ func (c *Config) Load(path string) error {
 
 	// find config in the environment
 	v.AutomaticEnv()
-	v.SetEnvPrefix("POCMAN")
+	v.SetEnvPrefix("POCMANAGENT")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if err := v.ReadInConfig(); err != nil {

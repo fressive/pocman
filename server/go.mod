@@ -46,6 +46,7 @@ require (
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/tools v0.35.0 // indirect
+	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.9 // indirect
 	gorm.io/gorm v1.31.1 // indirect
 )

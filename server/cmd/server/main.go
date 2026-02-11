@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
-	"log"
-	"net/http"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,7 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"rina.icu/pocman-server/internal/conf"
-	"rina.icu/pocman-server/internal/handler"
 	"rina.icu/pocman-server/internal/server"
 )
 
@@ -24,43 +21,50 @@ func main() {
 	flag.Parse()
 
 	// init config
-	log.Printf("Reading configuration from \"%s\"", *config_file)
-	conf.AppConfig.Load(*config_file)
+	slog.Info("Reading configuration file", "path", *config_file)
+	if err := conf.ServerConfig.Load(*config_file); err != nil {
+		slog.Error("failed to load config", "err", err)
+		panic(err)
+	}
+
+	if conf.ServerConfig.Mode == "debug" {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		slog.Debug("You are running Pocman server with debug mode, set `mode` to `release` in your config to dismiss this warning")
+	}
 
 	// init HTTP server
-	if conf.AppConfig.Server.Mode == "release" {
+	if conf.ServerConfig.Mode == "release" {
 		// set gin log level
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	pingHandler := handler.NewPingHandler()
-	r := server.New(pingHandler)
-
-	addr := fmt.Sprintf("%s:%d", conf.AppConfig.Server.Host, conf.AppConfig.Server.Port)
-	srv := &http.Server{
-		Addr:    addr,
-		Handler: r,
+	httpSrv, err := server.RunHTTPServer()
+	if err != nil {
+		slog.Error("failed to run HTTP server", "err", err)
+		panic(err)
 	}
 
-	// run HTTP server
-	go func() {
-		log.Printf("Starting Pocman server on %s", addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
+	grpcSrv, err := server.RunGRPCServer()
+
+	if err != nil {
+		slog.Error("failed to run gRPC server", "err", err)
+		panic(err)
+	}
 
 	// block and wait
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down Pocman server...")
+	slog.Info("Shutting down HTTP server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Pocman server forced to shutdown:", err)
+	if err := httpSrv.Shutdown(ctx); err != nil {
+		slog.Error("Pocman server forced to shutdown.", "err", err)
 	}
 
-	log.Println("Pocman server exited")
+	slog.Info("Shutting down gRPC server...")
+	grpcSrv.GracefulStop()
+
+	slog.Info("Pocman server exited")
 }
