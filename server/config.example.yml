@@ -1,0 +1,40 @@
+###
+# Pocman Server configuration example. Use this file as a
+# starting point for customizing how the server listens, authenticates agents,
+# and persists data. Environment variables with prefix `POCMAN_` override
+# documented values (dots become underscores).
+###
+
+# Controls runtime behavior: debug|release
+mode: release
+
+# Enables verbose log output for debugging (true|false)
+verbose: false
+
+server:
+  # HTTP host that the server binds to. Leave 0.0.0.0 to listen on all
+  # interfaces, or narrow to a single address for security.
+  host: 0.0.0.0
+  # HTTP port for the public API.
+  port: 5031
+  # Agent gRPC port. Machine defaults to HTTP port + 1 when omitted.
+  grpc_port: 5032
+  grpc_cert:
+    # TLS certificate used to verify agent connections.
+    cert: cert/server.pem
+    # Private key paired with `cert`.
+    key: cert/server.key
+    # Optional CA bundle for mutual TLS.
+    ca: cert/ca.pem
+  # Optional token value.
+  grpc_token: ""
+
+data:
+  database:
+    # Supported drivers: sqlite|mysql|postgres
+    driver: sqlite
+    # Example DSNs:
+    # - sqlite: file:server.db?cache=shared&mode=memory
+    # - mysql: user:pass@tcp(localhost:3306)/pocman?parseTime=true
+    # - postgres: host=localhost port=5432 user=... password=...
+    source: file:server.db?cache=shared&mode=memory

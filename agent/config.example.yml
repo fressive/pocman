@@ -1,0 +1,40 @@
+# Pocman Agent configuration example
+# 
+# Use this file as a starting point for running the agent. All values
+# can be overridden via environment variables with the prefix
+# `POCMANAGENT_` (dots become underscores).
+
+# Identifies this agent instance. Helpful when tracking many agents
+name: agent-01
+
+# Controls runtime behavior: debug|release
+mode: release
+
+# Enables extra logging output for troubleshooting (true|false)
+verbose: false
+
+server:
+  # Where to reach the server. Use the server's public IP or DNS name.
+  host: 127.0.0.1
+  # gRPC port the server listens on.
+  port: 5032
+  grpc_cert:
+    # TLS certificate for the agent. Relative paths are resolved
+    # from the agent working directory.
+    cert: cert/agent.pem
+    # Private key that matches the certificate above.
+    key: cert/agent.key
+    # Optional CA bundle for mutual TLS validation.
+    ca: cert/ca.pem
+  # Optional token; primarily for backward compatibility.
+  grpc_token: ""
+
+data:
+  database:
+    # Supported drivers: sqlite|mysql|postgres
+    driver: sqlite
+    # DSN examples:
+    # - sqlite: file:data.db?cache=shared&mode=memory
+    # - mysql: user:pass@tcp(localhost:3306)/dbname?parseTime=true
+    # - postgres: host=localhost port=5432 user=... password=...
+    source: file:data.db?cache=shared&mode=memory
