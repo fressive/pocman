@@ -33,7 +33,20 @@ jobs:
         working-directory: ./common
         run: buf generate
 
-      - name: Go Mod Tidy
+      - name: Go Mod Tidy - common
+        working-directory: ./common
+        run: go mod tidy
+      
+      - name: Go Mod Tidy - cli
+        working-directory: ./cli
+        run: go mod tidy
+        
+      - name: Go Mod Tidy - agent
+        working-directory: ./agent
+        run: go mod tidy
+
+      - name: Go Mod Tidy - server
+        working-directory: ./server
         run: go mod tidy
 
       - name: Build Server
