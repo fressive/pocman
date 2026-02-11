@@ -9,13 +9,13 @@ import (
 	"net"
 	"os"
 
+	protocol "github.com/fressive/pocman/common/proto/v1"
+	"github.com/fressive/pocman/server/internal/conf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	protocol "rina.icu/pocman-common/proto/v1"
-	"rina.icu/pocman-server/internal/conf"
 )
 
 type server struct {

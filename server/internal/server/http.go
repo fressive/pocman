@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/fressive/pocman/server/internal/conf"
+	"github.com/fressive/pocman/server/internal/handler"
 	"github.com/gin-gonic/gin"
-	"rina.icu/pocman-server/internal/conf"
-	"rina.icu/pocman-server/internal/handler"
 )
 
 // Bind HTTP routes and return

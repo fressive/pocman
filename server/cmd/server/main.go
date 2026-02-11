@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/fressive/pocman/server/internal/conf"
+	"github.com/fressive/pocman/server/internal/server"
 	"github.com/gin-gonic/gin"
-	"rina.icu/pocman-server/internal/conf"
-	"rina.icu/pocman-server/internal/server"
 )
 
 var config_file = flag.String("c", "config.yml", "Configuration file, example: config.yml")

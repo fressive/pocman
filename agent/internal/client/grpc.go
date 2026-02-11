@@ -9,12 +9,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/fressive/pocman/agent/internal/conf"
+	protocol "github.com/fressive/pocman/common/proto/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
-	"rina.icu/pocman-agent/internal/conf"
-	protocol "rina.icu/pocman-common/proto/v1"
 )
 
 type TokenAuth struct {

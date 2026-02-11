@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"rina.icu/pocman-agent/internal/client"
-	"rina.icu/pocman-agent/internal/conf"
-	protocol "rina.icu/pocman-common/proto/v1"
+	"github.com/fressive/pocman/agent/internal/client"
+	"github.com/fressive/pocman/agent/internal/conf"
+	protocol "github.com/fressive/pocman/common/proto/v1"
 )
 
 var config_file = flag.String("c", "config.yml", "Configuration file, example: config.yml")

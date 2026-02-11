@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"github.com/fressive/pocman/server/internal/server/response"
 	"github.com/gin-gonic/gin"
-	"rina.icu/pocman-server/internal/server/response"
 )
 
 // PingHandler handles ping endpoints for health checks.
