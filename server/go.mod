@@ -3,11 +3,11 @@ module github.com/fressive/pocman/server
 go 1.25.7
 
 require (
+	github.com/fressive/pocman/common v0.0.1
 	github.com/gin-gonic/gin v1.11.0
 	github.com/spf13/viper v1.21.0
 	google.golang.org/grpc v1.78.0
 	gorm.io/gorm v1.31.1
-	github.com/fressive/pocman/common v0.0.1
 )
 
 require (
