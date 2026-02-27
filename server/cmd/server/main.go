@@ -11,6 +11,7 @@ import (
 
 	"github.com/firebase/genkit/go/genkit"
 	"github.com/fressive/pocman/server/internal/conf"
+	"github.com/fressive/pocman/server/internal/data"
 	"github.com/fressive/pocman/server/internal/llm"
 	"github.com/fressive/pocman/server/internal/llm/tool"
 	grpcServer "github.com/fressive/pocman/server/internal/server/grpc"
@@ -34,6 +35,13 @@ func main() {
 	if conf.ServerConfig.Mode == "debug" {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 		slog.Debug("You are running Pocman server with debug mode, set `mode` to `release` in your config to dismiss this warning")
+	}
+
+	// init Database
+	err := data.InitDatabase()
+	if err != nil {
+		slog.Error("failed to init database", "err", err)
+		panic(err)
 	}
 
 	// init LLM
