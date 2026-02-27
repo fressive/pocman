@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package proto.v1;
+option go_package = "github.com/fressive/pocman/common/proto/v1";
+
+// ContainerService provides RPC methods to control containers on the agent.
+service ContainerService {
+    // Deploy containers from a docker-compose.yml file
+    rpc DeployCompose(DeployComposeRequest) returns (DeployComposeResponse);
+}
+
+message DeployComposeRequest {
+    // Task id of this deployment.
+    uint32 task_id = 1;
+
+    // Raw string of generated docker-compose.yml file, will be passed to the agent and create containers.
+    string compose_raw = 2;
+}
+
+message DeployComposeResponse {
+    
+}

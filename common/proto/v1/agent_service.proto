@@ -5,14 +5,34 @@ option go_package = "github.com/fressive/pocman/common/proto/v1";
 
 // AgentService provides RPC methods for agent communication and monitoring.
 service AgentService {
+  // Init receives agent specification and returns acknowledgement.
+  rpc Init(InitRequest) returns (InitResponse);
   // Heartbeat receives agent status updates and returns acknowledgment.
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+}
+
+message InitRequest {
+  string version = 1;
+  string agent_id = 2;
+  string os = 3;
+  string platform_version = 4;
+  string cpu_model = 5;
+  uint32 cpu_cores = 6;
+  uint32 cpu_mhz = 7;
+  uint64 ram_total = 8;
+}
+
+message InitResponse {
+  int32 code = 1;
 }
 
 message HeartbeatRequest {
   string agent_id = 1;
   float cpu_usage = 2;
   float mem_usage = 3;
+  float load_1 = 4;
+  float load_2 = 5;
+  float load_15 = 6;
 }
 
 message HeartbeatResponse {
