@@ -14,20 +14,21 @@ import (
 	"github.com/fressive/pocman/server/internal/data"
 	"github.com/fressive/pocman/server/internal/llm"
 	"github.com/fressive/pocman/server/internal/llm/tool"
+	"github.com/fressive/pocman/server/internal/model/dto"
 	grpcServer "github.com/fressive/pocman/server/internal/server/grpc"
 	httpServer "github.com/fressive/pocman/server/internal/server/http"
 	"github.com/gin-gonic/gin"
 )
 
-var config_file = flag.String("c", "config.yml", "Configuration file, example: config.yml")
+var configFile = flag.String("c", "config.yml", "Configuration file, example: config.yml")
 
 func main() {
 	// parse cmd parameters
 	flag.Parse()
 
 	// init config
-	slog.Info("Reading configuration file", "path", *config_file)
-	if err := conf.ServerConfig.Load(*config_file); err != nil {
+	slog.Info("Reading configuration file", "path", *configFile)
+	if err := conf.ServerConfig.Load(*configFile); err != nil {
 		slog.Error("failed to load config", "err", err)
 		panic(err)
 	}
@@ -41,6 +42,12 @@ func main() {
 	err := data.InitDatabase()
 	if err != nil {
 		slog.Error("failed to init database", "err", err)
+		panic(err)
+	}
+
+	err = data.DB.AutoMigrate(&dto.Agent{})
+	if err != nil {
+		slog.Error("failed to migrate database", "err", err)
 		panic(err)
 	}
 

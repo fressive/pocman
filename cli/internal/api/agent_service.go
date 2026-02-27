@@ -7,7 +7,7 @@ import (
 )
 
 func (c *Client) ListAgents(ctx context.Context) error {
-	var resp model.Response[any]
+	var resp model.Response[model.Agent]
 	err := c.Do(ctx, "GET", "/api/v1/agent", nil, &resp)
 	return err
 }

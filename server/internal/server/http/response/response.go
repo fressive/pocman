@@ -29,7 +29,7 @@ func Result[T any](c *gin.Context, httpCode int, code int, msg string, data T) {
 // and the provided data payload.
 // c: the Gin context for the request.
 // data: the response payload to return to the client.
-func Success(c *gin.Context, data interface{}) {
+func Success(c *gin.Context, data any) {
 	Result(c, http.StatusOK, 0, "success", data)
 }
 

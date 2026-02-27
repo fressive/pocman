@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
 // Initialize the database from server config. Ensure that the
 // config is loaded before calling this function.
@@ -21,11 +21,11 @@ func InitDatabase() error {
 
 	switch dbconf.Driver {
 	case "sqlite":
-		db, err = gorm.Open(sqlite.Open(dbconf.Source))
+		DB, err = gorm.Open(sqlite.Open(dbconf.Source))
 	case "mysql":
-		db, err = gorm.Open(mysql.Open(dbconf.Source), &gorm.Config{})
+		DB, err = gorm.Open(mysql.Open(dbconf.Source), &gorm.Config{})
 	case "postgres":
-		db, err = gorm.Open(postgres.Open(dbconf.Source), &gorm.Config{})
+		DB, err = gorm.Open(postgres.Open(dbconf.Source), &gorm.Config{})
 	default:
 		err = fmt.Errorf("unknown database driver %s", conf.ServerConfig.Data.Database.Driver)
 	}

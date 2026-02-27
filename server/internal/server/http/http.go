@@ -10,12 +10,14 @@ import (
 )
 
 // Bind HTTP routes and return
-func NewHTTPServer(pingHandler *PingHandler) (*gin.Engine, error) {
+func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler) (*gin.Engine, error) {
 	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("/ping", pingHandler.Ping)
+
+		v1.GET("/agent", agentHandler.GetAgents)
 	}
 
 	return r, nil
@@ -23,7 +25,9 @@ func NewHTTPServer(pingHandler *PingHandler) (*gin.Engine, error) {
 
 func RunHTTPServer() (*http.Server, error) {
 	pingHandler := NewPingHandler()
-	r, err := NewHTTPServer(pingHandler)
+	agentHandler := NewAgentHandler()
+
+	r, err := NewHTTPServer(pingHandler, agentHandler)
 	if err != nil {
 		return nil, err
 	}
