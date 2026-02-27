@@ -1,4 +1,4 @@
-package version
+package internal
 
 import "golang.org/x/mod/semver"
 

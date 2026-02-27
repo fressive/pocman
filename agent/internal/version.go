@@ -1,4 +1,4 @@
-package version
+package internal
 
 // Semver of Pocman Agent
 const AGENT_VERSION = "v1.0.0"
