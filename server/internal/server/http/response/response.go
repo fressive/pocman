@@ -6,18 +6,9 @@ package response
 import (
 	"net/http"
 
+	"github.com/fressive/pocman/common/pkg/model"
 	"github.com/gin-gonic/gin"
 )
-
-// Response represents a standardized JSON response structure.
-// Code: indicates the application-level status code (0 for success, non-zero for errors).
-// Msg: contains a human-readable message describing the response.
-// Data: holds the response payload, supporting any data type via interface{}.
-type Response struct {
-	Code int         `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
-}
 
 // Result sends a JSON response to the client with the specified HTTP status code,
 // application code, message, and data payload.
@@ -26,8 +17,8 @@ type Response struct {
 // code: the application-level status code.
 // msg: a message describing the response.
 // data: the response payload (can be nil).
-func Result(c *gin.Context, httpCode int, code int, msg string, data any) {
-	c.JSON(httpCode, Response{
+func Result[T any](c *gin.Context, httpCode int, code int, msg string, data T) {
+	c.JSON(httpCode, model.Response[T]{
 		Code: code,
 		Msg:  msg,
 		Data: data,
@@ -47,5 +38,5 @@ func Success(c *gin.Context, data interface{}) {
 // code: the application-level error code.
 // msg: a message describing the error.
 func Error(c *gin.Context, code int, msg string) {
-	Result(c, http.StatusBadRequest, code, msg, nil)
+	Result(c, http.StatusBadRequest, code, msg, map[string]string{})
 }

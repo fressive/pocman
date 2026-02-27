@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/fressive/pocman/server/internal/conf"
-	"github.com/fressive/pocman/server/internal/handler"
+	"github.com/fressive/pocman/server/internal/server/http/handler"
 	"github.com/gin-gonic/gin"
 )
 

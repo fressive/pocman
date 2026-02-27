@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/fressive/pocman/server/internal/server/response"
+	"github.com/fressive/pocman/server/internal/server/http/response"
 	"github.com/gin-gonic/gin"
 )
 
