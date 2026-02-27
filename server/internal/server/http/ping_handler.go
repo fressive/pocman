@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"github.com/fressive/pocman/server/internal/server/http/response"

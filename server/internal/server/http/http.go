@@ -1,4 +1,4 @@
-package server
+package http
 
 import (
 	"fmt"
@@ -6,12 +6,11 @@ import (
 	"net/http"
 
 	"github.com/fressive/pocman/server/internal/conf"
-	"github.com/fressive/pocman/server/internal/server/http/handler"
 	"github.com/gin-gonic/gin"
 )
 
 // Bind HTTP routes and return
-func NewHTTPServer(pingHandler *handler.PingHandler) (*gin.Engine, error) {
+func NewHTTPServer(pingHandler *PingHandler) (*gin.Engine, error) {
 	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
@@ -23,7 +22,7 @@ func NewHTTPServer(pingHandler *handler.PingHandler) (*gin.Engine, error) {
 }
 
 func RunHTTPServer() (*http.Server, error) {
-	pingHandler := handler.NewPingHandler()
+	pingHandler := NewPingHandler()
 	r, err := NewHTTPServer(pingHandler)
 	if err != nil {
 		return nil, err

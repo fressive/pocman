@@ -1,4 +1,4 @@
-package server
+package grpc
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"net"
 	"os"
 
-	protocol "github.com/fressive/pocman/common/proto/v1"
+	v1 "github.com/fressive/pocman/common/proto/v1"
 	"github.com/fressive/pocman/server/internal/conf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -18,19 +18,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type server struct {
-	protocol.UnimplementedAgentServiceServer
-}
-
-func (s *server) Heartbeat(ctx context.Context, req *protocol.HeartbeatRequest) (*protocol.HeartbeatResponse, error) {
-	slog.Debug("received heartbeat from agent", "ID", req.AgentId)
-
-	return &protocol.HeartbeatResponse{Status: "ok"}, nil
-}
-
-func (s *server) Init(ctx context.Context, req *protocol.InitRequest) (*protocol.InitResponse, error) {
-	slog.Info("new agent connected", "ID", req.AgentId, "version", req.Version)
-	return &protocol.InitResponse{Code: 0}, nil
+type GRPCServer struct {
+	v1.UnimplementedAgentServiceServer
 }
 
 func tokenAuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
@@ -82,7 +71,7 @@ func NewGRPCServer() (*grpc.Server, error) {
 		return nil, fmt.Errorf("authentication method is not configured")
 	}
 
-	protocol.RegisterAgentServiceServer(svr, &server{})
+	v1.RegisterAgentServiceServer(svr, &GRPCServer{})
 
 	return svr, nil
 }
