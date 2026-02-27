@@ -87,22 +87,36 @@ func main() {
 				Action:  handler.Test,
 			},
 			{
-				Name:    "config",
-				Aliases: []string{"conf"},
-				Usage:   "Config operations",
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:    "override",
-						Aliases: []string{"r"},
-						Usage:   "Force to override the existing configuration",
+				Name:    "agent",
+				Aliases: []string{"a"},
+				Usage:   "Agent related operations",
+				Before:  readConfig,
+				Commands: []*cli.Command{
+					{
+						Name:    "list",
+						Aliases: []string{"ls"},
+						Usage:   "List all agents",
+						Action:  handler.ListAgents,
 					},
 				},
+			},
+			{
+				Name:    "config",
+				Aliases: []string{"conf"},
+				Usage:   "Config related operations",
 				Commands: []*cli.Command{
 					{
 						Name:    "init",
 						Aliases: []string{"i"},
-						Usage:   "Init the configuration",
-						Action:  handler.InitConfig,
+						Flags: []cli.Flag{
+							&cli.BoolFlag{
+								Name:    "override",
+								Aliases: []string{"r"},
+								Usage:   "Force to override the existing configuration",
+							},
+						},
+						Usage:  "Init the configuration",
+						Action: handler.InitConfig,
 					},
 				},
 			},

@@ -82,19 +82,21 @@ func InitConfig(ctx context.Context, c *cli.Command) error {
 	}
 
 	if _, err := os.Stat(configPath); err == nil {
-		prompt := promptui.Prompt{
-			Label:     "Config already exists, override",
-			IsConfirm: true,
-		}
+		if !c.Bool("override") {
+			prompt := promptui.Prompt{
+				Label:     "Config already exists, override",
+				IsConfirm: true,
+			}
 
-		_, err := prompt.Run()
+			_, err := prompt.Run()
 
-		if err != nil {
-			return fmt.Errorf("Config already exists, quitted")
+			if err != nil {
+				return fmt.Errorf("Config already exists, quitted")
+			}
 		}
 
 		// load this config and modify based on it
-		prompt = promptui.Prompt{
+		prompt := promptui.Prompt{
 			Label:     "Use the existing config as a template",
 			IsConfirm: true,
 		}
