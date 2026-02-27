@@ -33,6 +33,7 @@ type Config struct {
 
 	Server *Server `mapstructure:"server" yaml:"server"`
 	Data   *Data   `mapstructure:"data" yaml:"data"`
+	LLM    *LLM    `mapstructure:"llm" yaml:"llm"`
 }
 
 type Server struct {
@@ -61,6 +62,20 @@ type Certificate struct {
 
 	// Self-signed CA certificate, example: cert/ca.pem
 	CA string `mapstructure:"ca" yaml:"ca"`
+}
+
+type LLM struct {
+	// LLM Provider, options: openai|googlegenai|googlevertexai|anthropic|grok|deepseek|ollama|custom
+	Provider string `mapstructure:"provider" yaml:"provider"`
+
+	// API Endpoint, only effected when provider sets to anthropic|ollama|custom
+	Endpoint string `mapstructure:"endpoint" yaml:"endpoint"`
+
+	// API Key
+	APIKey string `mapstructure:"api_key" yaml:"api_key"`
+
+	// Model
+	Model string `mapstructure:"model" yaml:"model"`
 }
 
 type Data struct {
