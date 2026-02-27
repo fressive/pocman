@@ -42,3 +42,6 @@ cert
 
 # protoc generated files
 *.pb.go
+
+# genkit related
+.genkit
