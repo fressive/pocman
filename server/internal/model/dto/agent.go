@@ -11,10 +11,10 @@ import (
 // Agent represents a payload sent to CLI/HTTP consumers.
 type Agent struct {
 	gorm.Model   `json:"-"`
-	AgentID      string `json:"agent_id" gorm:"size:64;not null;uniqueIndex"`
-	CPUUsage     uint32 `json:"cpu_usage" gorm:"type:int;default:0"`
-	RAMTotal     uint64 `json:"ram_total" gorm:"type:bigint;default:0"`
-	RAMAvailable uint64 `json:"ram_available" gorm:"type:bigint;default:0"`
+	AgentID      string  `json:"agent_id" gorm:"size:64;not null;uniqueIndex"`
+	CPUUsage     float32 `json:"cpu_usage" gorm:"type:decimal(4,2)"`
+	RAMTotal     uint64  `json:"ram_total" gorm:"type:bigint;default:0"`
+	RAMAvailable uint64  `json:"ram_available" gorm:"type:bigint;default:0"`
 
 	LastInit      time.Time `json:"last_init"`
 	LastHeartbeat time.Time `json:"last_heartbeat"`

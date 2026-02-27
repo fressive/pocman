@@ -44,7 +44,7 @@ func ListAgents(ctx context.Context, c *cli.Command) error {
 			a.AgentID,
 			online,
 			uptime.String(),
-			fmt.Sprintf("%d%%", a.CPUUsage),
+			fmt.Sprintf("%.0f%%", a.CPUUsage),
 			fmt.Sprintf("%dM/%dM", a.RAMAvailable/1024/1024, a.RAMTotal/1024/1024),
 		}
 	}))

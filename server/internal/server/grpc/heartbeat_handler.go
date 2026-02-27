@@ -16,6 +16,8 @@ func (s *GRPCServer) Heartbeat(ctx context.Context, req *v1.HeartbeatRequest) (*
 	data.DB.Where(&dto.Agent{
 		AgentID: req.AgentId,
 	}).Updates(dto.Agent{
+		CPUUsage:      req.CpuUsage,
+		RAMAvailable:  req.RamAvailable,
 		LastHeartbeat: time.Now(),
 	})
 
