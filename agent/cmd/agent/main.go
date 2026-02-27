@@ -7,7 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/fressive/pocman/agent/internal/client"
+	client "github.com/fressive/pocman/agent/internal/client/grpc"
+	"github.com/fressive/pocman/agent/internal/client/grpc/handler"
 	"github.com/fressive/pocman/agent/internal/conf"
 	protocol "github.com/fressive/pocman/common/proto/v1"
 )
@@ -36,7 +37,9 @@ func main() {
 	defer conn.Close()
 
 	c := protocol.NewAgentServiceClient(conn)
-	go client.ReportHeartbeat(&c)
+	handler.ReportInit(&c)
+
+	go handler.ReportHeartbeat(&c)
 
 	// block and wait
 	quit := make(chan os.Signal, 1)

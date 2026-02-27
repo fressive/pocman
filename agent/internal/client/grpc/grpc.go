@@ -1,4 +1,4 @@
-package client
+package grpc
 
 import (
 	"context"
@@ -7,14 +7,10 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"time"
 
 	"github.com/fressive/pocman/agent/internal/conf"
-	protocol "github.com/fressive/pocman/common/proto/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/status"
 )
 
 type TokenAuth struct {
@@ -29,29 +25,6 @@ func (t TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[s
 
 func (t TokenAuth) RequireTransportSecurity() bool {
 	return false
-}
-
-func ReportHeartbeat(client *protocol.AgentServiceClient) {
-	for {
-		_, err := (*client).Heartbeat(context.Background(), &protocol.HeartbeatRequest{
-			AgentId:  conf.AgentConfig.Name,
-			CpuUsage: 12.5,
-		})
-
-		if err != nil {
-			st, ok := status.FromError(err)
-			if ok {
-				switch st.Code() {
-				case codes.Unauthenticated:
-					slog.Error("cannot authenticate the identity, check your credentials", "err", err)
-				default:
-					slog.Error("heartbeat report failed:", "err", err)
-				}
-			}
-		}
-
-		time.Sleep(5 * time.Second)
-	}
 }
 
 func NewConn() (*grpc.ClientConn, error) {
@@ -94,7 +67,8 @@ func NewConn() (*grpc.ClientConn, error) {
 			RootCAs:      certPool,
 		})
 
-		conn, err = grpc.NewClient(target, grpc.WithTransportCredentials(creds))
+		conn, err = grpc.NewClient(target,
+			grpc.WithTransportCredentials(creds))
 	} else if server.GRPCToken != nil && *server.GRPCToken != "" {
 		// use token
 		slog.Warn("Transport will be insecure when token is used as the authenticator. " +
@@ -105,8 +79,7 @@ func NewConn() (*grpc.ClientConn, error) {
 			grpc.WithPerRPCCredentials(auth),
 			grpc.WithInsecure())
 	} else {
-		slog.Error("Authentication method not configured (cert|token)")
-		panic("configuration incomplete")
+		return nil, fmt.Errorf("Authentication method not configured (cert|token)")
 	}
 
 	return conn, err
