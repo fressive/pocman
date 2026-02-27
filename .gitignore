@@ -45,3 +45,6 @@ cert
 
 # genkit related
 .genkit
+
+# test database
+*.db
