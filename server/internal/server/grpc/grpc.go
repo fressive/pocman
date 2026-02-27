@@ -23,9 +23,14 @@ type server struct {
 }
 
 func (s *server) Heartbeat(ctx context.Context, req *protocol.HeartbeatRequest) (*protocol.HeartbeatResponse, error) {
-	slog.Debug("received heartbeat from agent", "AgentId", req.AgentId)
+	slog.Debug("received heartbeat from agent", "ID", req.AgentId)
 
 	return &protocol.HeartbeatResponse{Status: "ok"}, nil
+}
+
+func (s *server) Init(ctx context.Context, req *protocol.InitRequest) (*protocol.InitResponse, error) {
+	slog.Info("new agent connected", "ID", req.AgentId, "version", req.Version)
+	return &protocol.InitResponse{Code: 0}, nil
 }
 
 func tokenAuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
