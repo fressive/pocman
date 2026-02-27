@@ -3,12 +3,16 @@ package api
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/fressive/pocman/cli/internal"
+	"github.com/fressive/pocman/cli/internal/conf"
 )
 
 type Client struct {
@@ -38,6 +42,23 @@ func NewClient(endpoint, token string) (*Client, error) {
 	}, nil
 }
 
+var apiClient *Client
+
+func GetClient() (*Client, error) {
+	if apiClient != nil {
+		return apiClient, nil
+	} else {
+		var err error
+
+		apiClient, err = NewClient(
+			conf.CLIConfig.Server.Endpoint,
+			conf.CLIConfig.Server.Token,
+		)
+
+		return apiClient, err
+	}
+}
+
 func (c *Client) Do(ctx context.Context, method, path string, body interface{}, res interface{}) error {
 	var bodyReader io.Reader
 	if body != nil {
@@ -51,7 +72,9 @@ func (c *Client) Do(ctx context.Context, method, path string, body interface{}, 
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.Token)
+	req.Header.Set("User-Agent", "pocman-cli/"+internal.CLI_VERSION)
+	req.Header.Set("Authorization", "Bearer "+
+		base64.RawURLEncoding.EncodeToString([]byte(c.Token)))
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {

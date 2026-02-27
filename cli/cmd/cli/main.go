@@ -9,7 +9,7 @@ import (
 
 	"github.com/fressive/pocman/cli/internal"
 	"github.com/fressive/pocman/cli/internal/conf"
-	"github.com/fressive/pocman/cli/version/handler"
+	"github.com/fressive/pocman/cli/internal/handler"
 	"github.com/urfave/cli/v3"
 )
 
@@ -84,10 +84,7 @@ func main() {
 				Aliases: []string{"t"},
 				Usage:   "Test the connection to the server",
 				Before:  readConfig,
-				Action: func(ctx context.Context, cmd *cli.Command) error {
-					fmt.Println("test successfully")
-					return nil
-				},
+				Action:  handler.Test,
 			},
 			{
 				Name:    "config",
