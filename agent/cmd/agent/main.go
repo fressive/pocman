@@ -13,15 +13,15 @@ import (
 	protocol "github.com/fressive/pocman/common/proto/v1"
 )
 
-var config_file = flag.String("c", "config.yml", "Configuration file, example: config.yml")
+var configFile = flag.String("c", "config.yml", "Configuration file, example: config.yml")
 
 func main() {
 	// parse cmd parameters
 	flag.Parse()
 
 	// reading config
-	slog.Info("Reading configuration file", "path", *config_file)
-	if err := conf.AgentConfig.Load(*config_file); err != nil {
+	slog.Info("Reading configuration file", "path", *configFile)
+	if err := conf.AgentConfig.Load(*configFile); err != nil {
 		slog.Error("failed to load config", "err", err)
 		panic(err)
 	}
