@@ -5,39 +5,18 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strconv"
 
+	"github.com/charmbracelet/huh"
 	"github.com/fressive/pocman/cli/internal/conf"
-	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli/v3"
 )
 
-func promptConfig[T int | string | bool](name string, config *T) error {
-	prompt := promptui.Prompt{
-		Label:   name,
-		Default: fmt.Sprint(*config),
-	}
-
-	result, err := prompt.Run()
-	if err != nil {
-		return err
-	}
-
-	switch pointer := any(config).(type) {
-	case *int:
-		value, parseErr := strconv.ParseInt(result, 0, 0)
-		if parseErr != nil {
-			return parseErr
-		}
-		*pointer = int(value)
-	case *bool:
-		value, parseErr := strconv.ParseBool(result)
-		if parseErr != nil {
-			return parseErr
-		}
-		*pointer = value
+func generateField(name string, config any) huh.Field {
+	switch config := config.(type) {
 	case *string:
-		*pointer = result
+		return huh.NewInput().Title(name).Value(config)
+	case *bool:
+		return huh.NewConfirm().Title(name).Value(config).Affirmative("true").Negative("false")
 	}
 
 	return nil
@@ -45,14 +24,15 @@ func promptConfig[T int | string | bool](name string, config *T) error {
 
 func ModifyConfig() error {
 	// server section
-	if err := promptConfig("[Server] Endpoint (e.g. http://127.0.0.1:5031)", &conf.CLIConfig.Server.Endpoint); err != nil {
-		return err
-	}
-	if err := promptConfig("[Server] Token", &conf.CLIConfig.Server.Token); err != nil {
-		return err
-	}
 
-	return nil
+	form := huh.NewForm(
+		huh.NewGroup(
+			generateField("Endpoint", &conf.CLIConfig.Server.Endpoint),
+			generateField("Token", &conf.CLIConfig.Server.Token),
+		).Title("Server"),
+	)
+
+	return form.Run()
 }
 
 func InitConfig(ctx context.Context, c *cli.Command) error {
@@ -83,27 +63,26 @@ func InitConfig(ctx context.Context, c *cli.Command) error {
 
 	if _, err := os.Stat(configPath); err == nil {
 		if !c.Bool("override") {
-			prompt := promptui.Prompt{
-				Label:     "Config already exists, override",
-				IsConfirm: true,
-			}
+			var override bool
 
-			_, err := prompt.Run()
+			huh.NewConfirm().
+				Title("Config already exists, override?").
+				Value(&override).
+				Run()
 
-			if err != nil {
+			if !override {
 				return fmt.Errorf("Config already exists, quitted")
 			}
 		}
 
+		var useExisting bool
+		huh.NewConfirm().
+			Title("Use the existing config as a template?").
+			Value(&useExisting).
+			Run()
+
 		// load this config and modify based on it
-		prompt := promptui.Prompt{
-			Label:     "Use the existing config as a template",
-			IsConfirm: true,
-		}
-
-		_, err = prompt.Run()
-
-		if err == nil {
+		if useExisting {
 			conf.CLIConfig.Load(configPath)
 		}
 
@@ -111,18 +90,10 @@ func InitConfig(ctx context.Context, c *cli.Command) error {
 		return err
 	}
 
-	ModifyConfig()
-
-	prompt := promptui.Prompt{
-		Label:     "Confirm",
-		Default:   "Y",
-		IsConfirm: true,
-	}
-
-	_, err = prompt.Run()
-
+	err = ModifyConfig()
 	if err == nil {
 		conf.CLIConfig.Save(configPath)
 	}
-	return nil
+
+	return err
 }
