@@ -43,19 +43,21 @@ func ListAgents(ctx context.Context, c *cli.Command) error {
 	table.Header("ID", "Status", "Uptime", "CPU", "RAM")
 	table.Bulk(lo.Map(agents, func(a model.Agent, _ int) []any {
 		var online string
+		var uptime string
 
 		if a.Online {
 			online = "Online"
+			uptimeDuration, _ := time.ParseDuration(fmt.Sprintf("%fs", math.Round(a.Uptime)))
+			uptime = uptimeDuration.String()
 		} else {
 			online = "Offline"
+			uptime = "N/A"
 		}
-
-		uptime, _ := time.ParseDuration(fmt.Sprintf("%fs", math.Round(a.Uptime)))
 
 		return []any{
 			a.AgentID,
 			online,
-			uptime.String(),
+			uptime,
 			fmt.Sprintf("%.0f%%", a.CPUUsage),
 			fmt.Sprintf("%dM/%dM", (a.RAMTotal-a.RAMAvailable)/1024/1024, a.RAMTotal/1024/1024),
 		}
