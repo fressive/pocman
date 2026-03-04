@@ -78,6 +78,7 @@ func main() {
 				Usage:   "The location of config file, default to %UserConfigDir%/config.yml",
 			},
 		},
+
 		Commands: []*cli.Command{
 			{
 				Name:    "test",
@@ -103,20 +104,27 @@ func main() {
 			{
 				Name:    "config",
 				Aliases: []string{"conf"},
-				Usage:   "Config related operations",
+				Usage:   "Configure pocman-cli tool",
+				Action:  handler.Configure,
+			},
+			{
+				Name:    "vuln",
+				Aliases: []string{"v"},
+				Usage:   "Vulnerability related operations",
+				Before:  readConfig,
 				Commands: []*cli.Command{
 					{
-						Name:    "init",
-						Aliases: []string{"i"},
-						Flags: []cli.Flag{
-							&cli.BoolFlag{
-								Name:    "override",
-								Aliases: []string{"r"},
-								Usage:   "Force to override the existing configuration",
+						Name:    "new",
+						Aliases: []string{"n"},
+						Usage:   "Create a new vulnerability",
+						Action:  handler.CreateVuln,
+						Commands: []*cli.Command{
+							{
+								Name:   "cve",
+								Usage:  "Create a new vulnerability from CVE",
+								Action: handler.CreateVulnFromCVE,
 							},
 						},
-						Usage:  "Init the configuration",
-						Action: handler.InitConfig,
 					},
 				},
 			},
