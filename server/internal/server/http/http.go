@@ -10,7 +10,7 @@ import (
 )
 
 // Bind HTTP routes and return
-func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler) (*gin.Engine, error) {
+func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler, fileHandler *FileHandler, vulnHandler *VulnHandler) (*gin.Engine, error) {
 	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
@@ -18,6 +18,11 @@ func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler) (*gin.E
 		v1.GET("/ping", pingHandler.Ping)
 
 		v1.GET("/agent", agentHandler.GetAgents)
+
+		v1.POST("/vuln", vulnHandler.NewVuln)
+
+		v1.POST("/file/upload", fileHandler.FileUpload)
+		v1.GET("/file/download", fileHandler.FileDownload)
 	}
 
 	return r, nil
@@ -26,8 +31,10 @@ func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler) (*gin.E
 func RunHTTPServer() (*http.Server, error) {
 	pingHandler := NewPingHandler()
 	agentHandler := NewAgentHandler()
+	fileHandler := NewFileHandler()
+	vulnHandler := NewVulnHandler()
 
-	r, err := NewHTTPServer(pingHandler, agentHandler)
+	r, err := NewHTTPServer(pingHandler, agentHandler, fileHandler, vulnHandler)
 	if err != nil {
 		return nil, err
 	}

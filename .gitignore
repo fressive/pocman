@@ -48,3 +48,6 @@ cert
 
 # test database
 *.db
+
+# test storaged files
+storage

@@ -45,7 +45,7 @@ func main() {
 		panic(err)
 	}
 
-	err = data.DB.AutoMigrate(&dto.Agent{})
+	err = data.DB.AutoMigrate(&dto.Agent{}, &dto.UploadedFile{}, &dto.Vuln{})
 	if err != nil {
 		slog.Error("failed to migrate database", "err", err)
 		panic(err)

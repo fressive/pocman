@@ -80,6 +80,7 @@ type LLM struct {
 
 type Data struct {
 	Database *Database `mapstructure:"database" yaml:"database"`
+	Storage  *Storage  `mapstructure:"storage" yaml:"storage"`
 }
 
 type Database struct {
@@ -88,6 +89,11 @@ type Database struct {
 
 	// DSN, example: file:data.db?cache=shared&mode=memory
 	Source string `mapstructure:"source" yaml:"source"`
+}
+
+type Storage struct {
+	// Path where files are storaged, example: ./storage
+	Path string `mapstructure:"path" yaml:"path"`
 }
 
 var ServerConfig = Config{
@@ -102,6 +108,9 @@ var ServerConfig = Config{
 		Database: &Database{
 			Driver: "sqlite",
 			Source: "file:data.db?cache=shared&mode=memory",
+		},
+		Storage: &Storage{
+			Path: "./storage",
 		},
 	},
 }
