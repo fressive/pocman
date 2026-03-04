@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 
@@ -35,9 +34,7 @@ func ModifyConfig() error {
 	return form.Run()
 }
 
-func InitConfig(ctx context.Context, c *cli.Command) error {
-	fmt.Println("Initializing pocman-cli config...")
-
+func Configure(ctx context.Context, c *cli.Command) error {
 	configDir, err := conf.DefaultDirPath()
 
 	if err != nil {
@@ -62,30 +59,7 @@ func InitConfig(ctx context.Context, c *cli.Command) error {
 	}
 
 	if _, err := os.Stat(configPath); err == nil {
-		if !c.Bool("override") {
-			var override bool
-
-			huh.NewConfirm().
-				Title("Config already exists, override?").
-				Value(&override).
-				Run()
-
-			if !override {
-				return fmt.Errorf("Config already exists, quitted")
-			}
-		}
-
-		var useExisting bool
-		huh.NewConfirm().
-			Title("Use the existing config as a template?").
-			Value(&useExisting).
-			Run()
-
-		// load this config and modify based on it
-		if useExisting {
-			conf.CLIConfig.Load(configPath)
-		}
-
+		conf.CLIConfig.Load(configPath)
 	} else if !os.IsNotExist(err) {
 		return err
 	}
