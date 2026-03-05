@@ -69,6 +69,7 @@ func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler, fileHan
 
 		v1.GET("/agent", agentHandler.GetAgents)
 
+		v1.GET("/vuln", vulnHandler.ListVuln)
 		v1.POST("/vuln", vulnHandler.NewVuln)
 
 		v1.POST("/file/upload", fileHandler.FileUpload)

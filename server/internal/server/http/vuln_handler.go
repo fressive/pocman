@@ -9,6 +9,7 @@ import (
 	"github.com/fressive/pocman/server/internal/model/dto"
 	"github.com/fressive/pocman/server/internal/server/http/response"
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"gorm.io/gorm"
 )
 
@@ -63,5 +64,8 @@ func (h *VulnHandler) NewVuln(c *gin.Context) {
 }
 
 func (h *VulnHandler) ListVuln(c *gin.Context) {
-
+	vulns := dto.GetVulns()
+	response.Success(c, lo.Map(vulns, func(v dto.Vuln, _ int) model.Vuln {
+		return v.ToModel()
+	}))
 }

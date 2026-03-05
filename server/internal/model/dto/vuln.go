@@ -2,6 +2,7 @@ package dto
 
 import (
 	commonModel "github.com/fressive/pocman/common/pkg/model"
+	"github.com/fressive/pocman/server/internal/data"
 	"gorm.io/gorm"
 )
 
@@ -20,4 +21,11 @@ func (v Vuln) ToModel() commonModel.Vuln {
 		Code:        v.Code,
 		Description: v.Description,
 	}
+}
+
+func GetVulns() []Vuln {
+	var vulns []Vuln
+	data.DB.Find(&vulns)
+
+	return vulns
 }
