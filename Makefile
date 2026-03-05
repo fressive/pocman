@@ -2,7 +2,7 @@ MODULE_DIRS := common cli agent server
 CMD_AGENT := ./agent/cmd/agent
 CMD_SERVER := ./server/cmd/server
 
-.PHONY: all buf-generate tidy build-agent build-server build clean proto
+.PHONY: all buf-generate tidy test build-agent build-server build clean proto
 
 all: build-server build-agent
 
@@ -13,6 +13,12 @@ tidy:
 	@for mod in $(MODULE_DIRS); do \
 		echo "tidying $$mod"; \
 		( cd $$mod && go mod tidy ); \
+	done
+
+test:
+	@for mod in $(MODULE_DIRS); do \
+		echo "testing $$mod"; \
+		( cd $$mod && go test ./... ); \
 	done
 
 build-agent:
