@@ -3,8 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/charmbracelet/huh"
@@ -61,8 +59,8 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 		return fmt.Errorf("code cannot be empty")
 	}
 
-	documents := normalizePathArgs(strings.Split(documentsText, "\n"))
-	resources := normalizePathArgs(strings.Split(resourcesText, "\n"))
+	documents := util.NormalizePathArgs(strings.Split(documentsText, "\n"))
+	resources := util.NormalizePathArgs(strings.Split(resourcesText, "\n"))
 
 	client, err := api.GetClient()
 	if err != nil {
@@ -71,6 +69,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 
 	var createdVuln model.Vuln
 	err = spinner.New().
+		Context(ctx).
 		Title("Creating vulnerability...").
 		ActionWithErr(func(ctx context.Context) error {
 			createdVuln, err = client.CreateVuln(ctx, *vuln)
@@ -86,11 +85,11 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 
 	vulnID := uint64(createdVuln.ID)
 
-	docFiles, err := expandUploadPaths(documents)
+	docFiles, err := util.ExpandUploadPaths(documents)
 	if err != nil {
 		return fmt.Errorf("resolve document paths: %w", err)
 	}
-	resFiles, err := expandUploadPaths(resources)
+	resFiles, err := util.ExpandUploadPaths(resources)
 	if err != nil {
 		return fmt.Errorf("resolve resource paths: %w", err)
 	}
@@ -102,6 +101,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 	uploaded := 0
 	for _, file := range docFiles {
 		err := spinner.New().
+			Context(ctx).
 			Title(fmt.Sprintf("Uploading document %s", file)).
 			ActionWithErr(func(ctx context.Context) error {
 				_, err := client.UploadFile(ctx, file, vulnID, model.Document)
@@ -123,6 +123,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 
 	for _, file := range resFiles {
 		err := spinner.New().
+			Context(ctx).
 			Title(fmt.Sprintf("Uploading resource %s", file)).
 			ActionWithErr(func(ctx context.Context) error {
 				_, err := client.UploadFile(ctx, file, vulnID, model.Resource)
@@ -180,64 +181,4 @@ func CreateVulnFromCVE(ctx context.Context, cmd *cli.Command) error {
 		Description: cve.Containers.CNA.Descriptions[0].Value,
 		Product:     &model.Product{},
 	})
-}
-
-func normalizePathArgs(raw []string) []string {
-	out := make([]string, 0, len(raw))
-	for _, entry := range raw {
-		trimmed := strings.TrimSpace(entry)
-		if trimmed == "" {
-			continue
-		}
-		out = append(out, trimmed)
-	}
-	return out
-}
-
-func expandUploadPaths(paths []string) ([]string, error) {
-	result := make([]string, 0)
-	seen := map[string]struct{}{}
-
-	for _, p := range paths {
-		info, err := os.Stat(p)
-		if err != nil {
-			return nil, err
-		}
-
-		if !info.IsDir() {
-			abs, err := filepath.Abs(p)
-			if err != nil {
-				return nil, err
-			}
-			if _, ok := seen[abs]; !ok {
-				seen[abs] = struct{}{}
-				result = append(result, abs)
-			}
-			continue
-		}
-
-		err = filepath.WalkDir(p, func(path string, d os.DirEntry, err error) error {
-			if err != nil {
-				return err
-			}
-			if d.IsDir() {
-				return nil
-			}
-			abs, err := filepath.Abs(path)
-			if err != nil {
-				return err
-			}
-			if _, ok := seen[abs]; ok {
-				return nil
-			}
-			seen[abs] = struct{}{}
-			result = append(result, abs)
-			return nil
-		})
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return result, nil
 }
