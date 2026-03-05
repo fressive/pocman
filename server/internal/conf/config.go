@@ -43,6 +43,9 @@ type Server struct {
 	// Port of the server, example: 5031
 	Port int `mapstructure:"port" yaml:"port"`
 
+	// Salt when hashify tokens, example: _pocman
+	Salt string `mapstructure:"salt" yaml:"salt"`
+
 	// Port where the Agent gRPC service listens. Falls back to HTTP port + 1 when zero.
 	GRPCPort int `mapstructure:"grpc_port" yaml:"grpc_port"`
 
@@ -103,6 +106,7 @@ var ServerConfig = Config{
 		Host:     "127.0.0.1",
 		Port:     5031,
 		GRPCPort: 5032,
+		Salt:     "_pocman",
 	},
 	Data: &Data{
 		Database: &Database{
