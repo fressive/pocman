@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/fressive/pocman/common/pkg/model"
@@ -8,6 +9,7 @@ import (
 	"github.com/fressive/pocman/server/internal/model/dto"
 	"github.com/fressive/pocman/server/internal/server/http/response"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type VulnHandler struct{}
@@ -37,6 +39,15 @@ func (h *VulnHandler) NewVuln(c *gin.Context) {
 		return
 	}
 
+	var existed dto.Vuln
+	if err := data.DB.Where("code = ?", req.Code).First(&existed).Error; err == nil {
+		response.Error(c, 12004, "vulnerability code already exists")
+		return
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		response.Error(c, 12005, err.Error())
+		return
+	}
+
 	record := dto.Vuln{
 		Title:       req.Title,
 		Code:        req.Code,
@@ -44,10 +55,6 @@ func (h *VulnHandler) NewVuln(c *gin.Context) {
 	}
 
 	if err := data.DB.Create(&record).Error; err != nil {
-		if isUniqueConstraintErr(err) {
-			response.Error(c, 12004, "vulnerability code already exists")
-			return
-		}
 		response.Error(c, 12005, err.Error())
 		return
 	}
@@ -55,13 +62,6 @@ func (h *VulnHandler) NewVuln(c *gin.Context) {
 	response.Success(c, record.ToModel())
 }
 
-func isUniqueConstraintErr(err error) bool {
-	if err == nil {
-		return false
-	}
+func (h *VulnHandler) ListVuln(c *gin.Context) {
 
-	msg := strings.ToLower(err.Error())
-	return strings.Contains(msg, "unique constraint failed") ||
-		strings.Contains(msg, "duplicate entry") ||
-		strings.Contains(msg, "violates unique constraint")
 }
