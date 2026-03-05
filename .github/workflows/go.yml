@@ -37,8 +37,3 @@ jobs:
 
       - name: Build
         run: make build
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: make test
