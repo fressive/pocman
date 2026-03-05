@@ -29,7 +29,7 @@ func tokenAuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerIn
 	}
 
 	if tokens, ok := meta["authorization"]; ok {
-		if tokens[0] == conf.ServerConfig.Server.GRPCToken {
+		if len(tokens) > 0 && tokens[0] == conf.ServerConfig.Server.GRPCToken {
 			return handler(ctx, req)
 		}
 	}
