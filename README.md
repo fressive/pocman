@@ -1,6 +1,6 @@
 # Pocman
 
-![GitHub License](https://img.shields.io/github/license/fressive/pocman)  ![GitHub top language](https://img.shields.io/github/languages/top/fressive/pocman) ![Build Status](https://img.shields.io/github/actions/workflow/status/fressive/pocman/go.yml) ![Test Status](https://img.shields.io/github/actions/workflow/status/fressive/pocman/go-test.yml)
+![GitHub License](https://img.shields.io/github/license/fressive/pocman)  ![GitHub top language](https://img.shields.io/github/languages/top/fressive/pocman) ![Build Status](https://img.shields.io/github/actions/workflow/status/fressive/pocman/go.yml) ![Test Status](https://img.shields.io/github/actions/workflow/status/fressive/pocman/go-test.yml?label=test)
 
 Pocman is a self-hosted POC suite of vulnerabilities powered by LLM.
 
