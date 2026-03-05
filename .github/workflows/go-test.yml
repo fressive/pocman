@@ -19,5 +19,18 @@ jobs:
           go-version: '1.25.7'
           cache: true
 
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Install Protoc Plugins
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+      - name: Run Buf Generate
+        run: make proto
+
       - name: Test
         run: make test
