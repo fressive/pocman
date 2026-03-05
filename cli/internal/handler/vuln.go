@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/huh"
@@ -10,6 +11,10 @@ import (
 	"github.com/fressive/pocman/cli/internal/api"
 	"github.com/fressive/pocman/cli/internal/util"
 	"github.com/fressive/pocman/common/pkg/model"
+	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/renderer"
+	"github.com/olekukonko/tablewriter/tw"
+	"github.com/samber/lo"
 	"github.com/urfave/cli/v3"
 )
 
@@ -81,7 +86,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 		return err
 	}
 
-	fmt.Printf("pocman: vulnerability created, ID=%d\n", createdVuln.ID)
+	fmt.Printf("pocman-cli: vulnerability created, ID=%d\n", createdVuln.ID)
 
 	vulnID := uint64(createdVuln.ID)
 
@@ -110,7 +115,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 					uploaded++
 				}
 
-				fmt.Printf("pocman: document %s uploaded\n", file)
+				fmt.Printf("pocman-cli: document %s uploaded\n", file)
 
 				return err
 			}).
@@ -132,7 +137,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 					uploaded++
 				}
 
-				fmt.Printf("pocman: resource %s uploaded\n", file)
+				fmt.Printf("pocman-cli: resource %s uploaded\n", file)
 
 				return err
 			}).
@@ -181,4 +186,38 @@ func CreateVulnFromCVE(ctx context.Context, cmd *cli.Command) error {
 		Description: cve.Containers.CNA.Descriptions[0].Value,
 		Product:     &model.Product{},
 	})
+}
+
+func ListVuln(ctx context.Context, cmd *cli.Command) error {
+	client, err := api.GetClient()
+	if err != nil {
+		return err
+	}
+
+	vulns, err := client.ListVulns(ctx)
+	if err != nil {
+		return err
+	}
+
+	table := tablewriter.NewTable(os.Stdout,
+		tablewriter.WithRenderer(renderer.NewBlueprint()),
+		tablewriter.WithRendition(tw.Rendition{
+			Borders: tw.BorderNone,
+			Symbols: tw.NewSymbols(tw.StyleNone),
+			Settings: tw.Settings{
+				Lines:      tw.LinesNone,
+				Separators: tw.SeparatorsNone,
+			},
+		}),
+	)
+	table.Header("ID", "Code", "Title")
+	table.Bulk(lo.Map(vulns, func(v model.Vuln, _ int) []any {
+		return []any{
+			v.ID,
+			v.Code,
+			v.Title,
+		}
+	}))
+	table.Render()
+	return nil
 }

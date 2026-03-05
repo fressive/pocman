@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 
@@ -126,12 +125,18 @@ func main() {
 							},
 						},
 					},
+					{
+						Name:    "list",
+						Aliases: []string{"ls"},
+						Usage:   "List remote vulnerabilities",
+						Action:  handler.ListVuln,
+					},
 				},
 			},
 		},
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		log.Fatal(err)
+		fmt.Println("pocman-cli: [ERROR] " + err.Error())
 	}
 }
