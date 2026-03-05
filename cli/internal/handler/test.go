@@ -9,7 +9,7 @@ import (
 )
 
 func Test(ctx context.Context, c *cli.Command) error {
-	fmt.Println("Testing connection...")
+	fmt.Println("pocman-cli: Testing connection...")
 
 	client, err := api.GetClient()
 	if err != nil {
@@ -18,10 +18,10 @@ func Test(ctx context.Context, c *cli.Command) error {
 
 	err = client.Ping(ctx)
 	if err != nil {
-		fmt.Println("Failed to connect. Check the configuration by using `pocman-cli config list`")
+		fmt.Println("pocman-cli: Failed to connect. Check the configuration by using `pocman-cli config`")
 		return err
 	}
 
-	fmt.Println("Connect successfully.")
+	fmt.Println("pocman-cli: Connect successfully.")
 	return nil
 }
