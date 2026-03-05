@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/fressive/pocman/common/pkg/model"
+	"github.com/fressive/pocman/server/internal/model/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,4 +40,17 @@ func Success(c *gin.Context, data any) {
 // msg: a message describing the error.
 func Error(c *gin.Context, code int, msg string) {
 	Result(c, http.StatusBadRequest, code, msg, map[string]string{})
+}
+
+// Unauth sends an error JSON response with HTTP 401 status
+// c: the Gin context for the request
+func Unauth(c *gin.Context, err error) {
+	switch err {
+	case dto.ErrTokenExpired:
+		Result(c, http.StatusUnauthorized, 20001, err.Error(), map[string]string{})
+	case dto.ErrTokenInvalid:
+		Result(c, http.StatusUnauthorized, 20002, err.Error(), map[string]string{})
+	default:
+		Result(c, http.StatusUnauthorized, 20000, "unauthorized, check your token", map[string]string{})
+	}
 }

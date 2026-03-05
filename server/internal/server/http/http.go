@@ -1,17 +1,67 @@
 package http
 
 import (
+	"encoding/base64"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/fressive/pocman/server/internal/conf"
+	"github.com/fressive/pocman/server/internal/model/dto"
+	"github.com/fressive/pocman/server/internal/server/http/response"
 	"github.com/gin-gonic/gin"
 )
 
+func TokenAuthMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		auth := ctx.Request.Header.Get("Authorization")
+
+		if auth != "" {
+			// Bearer xxxxxxxx
+			parts := strings.SplitN(auth, " ", 2)
+			if len(parts) != 2 || strings.TrimSpace(parts[1]) == "" {
+				response.Unauth(ctx, nil)
+				ctx.Abort()
+				return
+			}
+
+			b64token := parts[1]
+			tokenb, err := base64.RawURLEncoding.DecodeString(b64token)
+
+			if err != nil {
+				response.Error(ctx, 20001, "fail to decode token")
+				ctx.Abort()
+				return
+			}
+
+			token := string(tokenb)
+
+			if err := dto.VerifyToken(token); err == nil {
+				ctx.Next()
+				return
+			} else {
+				response.Unauth(ctx, err)
+				ctx.Abort()
+				return
+			}
+		}
+
+		response.Unauth(ctx, nil)
+		ctx.Abort()
+	}
+}
+
 // Bind HTTP routes and return
 func NewHTTPServer(pingHandler *PingHandler, agentHandler *AgentHandler, fileHandler *FileHandler, vulnHandler *VulnHandler) (*gin.Engine, error) {
-	r := gin.Default()
+	r := gin.New()
+
+	r.Use(gin.Recovery())
+	r.Use(TokenAuthMiddleware())
+
+	if conf.ServerConfig.Mode == "debug" {
+		r.Use(gin.Logger())
+	}
 
 	v1 := r.Group("/api/v1")
 	{
