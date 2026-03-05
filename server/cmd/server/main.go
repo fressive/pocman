@@ -21,6 +21,7 @@ import (
 )
 
 var configFile = flag.String("c", "config.yml", "Configuration file, example: config.yml")
+var createTempAPIToken = flag.Bool("t", false, "Create a temp API token")
 
 func main() {
 	// parse cmd parameters
@@ -45,10 +46,28 @@ func main() {
 		panic(err)
 	}
 
-	err = data.DB.AutoMigrate(&dto.Agent{}, &dto.UploadedFile{}, &dto.Vuln{})
+	err = data.DB.AutoMigrate(
+		&dto.Agent{},
+		&dto.APIToken{},
+		&dto.UploadedFile{},
+		&dto.Vuln{},
+	)
+
 	if err != nil {
 		slog.Error("failed to migrate database", "err", err)
 		panic(err)
+	}
+
+	// create temp API token
+	if *createTempAPIToken {
+		_, token, err := dto.NewAPIToken("", "Temp API Token", 0)
+
+		slog.Info("Temp API key created, valid within 24 hours.", "token", token)
+
+		if err != nil {
+			slog.Error("failed to create temp API token", "err", err)
+			panic(err)
+		}
 	}
 
 	// init LLM
@@ -72,6 +91,7 @@ func main() {
 		panic(err)
 	}
 
+	// init gRPC Server
 	grpcSrv, err := grpcServer.RunGRPCServer()
 	if err != nil {
 		slog.Error("failed to run gRPC server", "err", err)
