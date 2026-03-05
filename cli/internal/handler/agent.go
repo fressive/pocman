@@ -25,7 +25,6 @@ func ListAgents(ctx context.Context, c *cli.Command) error {
 	agents, err := client.ListAgents(ctx)
 
 	if err != nil {
-		fmt.Println("Failed to fetch data from server. Check the configuration by using `pocman-cli config list` and use `pocman-cli test` to test connect connection.")
 		return err
 	}
 
@@ -64,5 +63,5 @@ func ListAgents(ctx context.Context, c *cli.Command) error {
 	}))
 	table.Render()
 
-	return err
+	return nil
 }
