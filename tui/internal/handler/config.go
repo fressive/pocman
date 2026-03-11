@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/charmbracelet/huh"
-	"github.com/fressive/pocman/cli/internal/conf"
+	"github.com/fressive/pocman/tui/internal/conf"
 	"github.com/urfave/cli/v3"
 )
 

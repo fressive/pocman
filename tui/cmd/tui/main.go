@@ -6,9 +6,10 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/fressive/pocman/cli/internal"
-	"github.com/fressive/pocman/cli/internal/conf"
-	"github.com/fressive/pocman/cli/internal/handler"
+	"github.com/fressive/pocman/tui/internal"
+	"github.com/fressive/pocman/tui/internal/command/agent"
+	"github.com/fressive/pocman/tui/internal/conf"
+	"github.com/fressive/pocman/tui/internal/handler"
 	"github.com/urfave/cli/v3"
 )
 
@@ -36,7 +37,7 @@ func readConfig(ctx context.Context, cmd *cli.Command) (context.Context, error) 
 	if _, err := os.Stat(config); err == nil {
 		conf.CLIConfig.Load(config)
 	} else if os.IsNotExist(err) {
-		fmt.Println("error: configuration file not found, use `pocman-cli config init` to initialize configuration")
+		fmt.Println("error: configuration file not found, use `pocman-tui config init` to initialize configuration")
 		os.Exit(1)
 		return nil, err
 	} else {
@@ -48,7 +49,7 @@ func readConfig(ctx context.Context, cmd *cli.Command) (context.Context, error) 
 
 func main() {
 	cmd := &cli.Command{
-		Name:    "pocman-cli",
+		Name:    "pocman-tui",
 		Version: internal.CLI_VERSION,
 		Usage:   "a CLI tool for managing Pocman service",
 		Flags: []cli.Flag{
@@ -66,7 +67,7 @@ func main() {
 				Aliases: []string{"V"},
 				Usage:   "Print version information and exit",
 				Action: func(ctx context.Context, cmd *cli.Command, b bool) error {
-					fmt.Printf("pocman-cli %s\n", internal.CLI_VERSION)
+					fmt.Printf("pocman-tui %s\n", internal.CLI_VERSION)
 					os.Exit(0)
 					return nil
 				},
@@ -81,7 +82,7 @@ func main() {
 		Commands: []*cli.Command{
 			{
 				Name:    "test",
-				Aliases: []string{"t"},
+				Aliases: []string{"T"},
 				Usage:   "Test the connection to the server",
 				Before:  readConfig,
 				Action:  handler.Test,
@@ -96,14 +97,14 @@ func main() {
 						Name:    "list",
 						Aliases: []string{"ls"},
 						Usage:   "List all agents",
-						Action:  handler.ListAgents,
+						Action:  agent.ListAgent,
 					},
 				},
 			},
 			{
 				Name:    "config",
 				Aliases: []string{"conf"},
-				Usage:   "Configure pocman-cli tool",
+				Usage:   "Configure pocman-tui tool",
 				Action:  handler.Configure,
 			},
 			{
@@ -133,10 +134,24 @@ func main() {
 					},
 				},
 			},
+			{
+				Name:    "task",
+				Aliases: []string{"t"},
+				Usage:   "Manage POC reproduction tasks",
+				Before:  readConfig,
+				Commands: []*cli.Command{
+					{
+						Name:    "new",
+						Aliases: []string{"n"},
+						Usage:   "Create a new task",
+						Action:  handler.NewTask,
+					},
+				},
+			},
 		},
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		fmt.Println("pocman-cli: [ERROR] " + err.Error())
+		fmt.Println("pocman-tui: [ERROR] " + err.Error())
 	}
 }

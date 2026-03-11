@@ -1,4 +1,4 @@
-MODULE_DIRS := common cli agent server
+MODULE_DIRS := common tui agent server
 CMD_AGENT := ./agent/cmd/agent
 CMD_SERVER := ./server/cmd/server
 

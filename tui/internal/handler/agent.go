@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/fressive/pocman/cli/internal/api"
 	"github.com/fressive/pocman/common/pkg/model"
+	"github.com/fressive/pocman/tui/internal/api"
 	"github.com/olekukonko/tablewriter"
 	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/olekukonko/tablewriter/tw"

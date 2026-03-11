@@ -8,9 +8,9 @@ import (
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
-	"github.com/fressive/pocman/cli/internal/api"
-	"github.com/fressive/pocman/cli/internal/util"
 	"github.com/fressive/pocman/common/pkg/model"
+	"github.com/fressive/pocman/tui/internal/api"
+	"github.com/fressive/pocman/tui/internal/util"
 	"github.com/olekukonko/tablewriter"
 	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/olekukonko/tablewriter/tw"
@@ -86,7 +86,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 		return err
 	}
 
-	fmt.Printf("pocman-cli: vulnerability created, ID=%d\n", createdVuln.ID)
+	fmt.Printf("pocman-tui: vulnerability created, ID=%d\n", createdVuln.ID)
 
 	vulnID := uint64(createdVuln.ID)
 
@@ -115,7 +115,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 					uploaded++
 				}
 
-				fmt.Printf("pocman-cli: document %s uploaded\n", file)
+				fmt.Printf("pocman-tui: document %s uploaded\n", file)
 
 				return err
 			}).
@@ -137,7 +137,7 @@ func createVuln(ctx context.Context, vuln *model.Vuln) error {
 					uploaded++
 				}
 
-				fmt.Printf("pocman-cli: resource %s uploaded\n", file)
+				fmt.Printf("pocman-tui: resource %s uploaded\n", file)
 
 				return err
 			}).
@@ -186,6 +186,10 @@ func CreateVulnFromCVE(ctx context.Context, cmd *cli.Command) error {
 		Description: cve.Containers.CNA.Descriptions[0].Value,
 		Product:     &model.Product{},
 	})
+}
+
+func EditVuln(ctx context.Context, cmd *cli.Command) error {
+	return nil
 }
 
 func ListVuln(ctx context.Context, cmd *cli.Command) error {

@@ -74,7 +74,7 @@ func (c *Client) doRequest(ctx context.Context, method, path, contentType string
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}
-	req.Header.Set("User-Agent", "pocman-cli/"+c.Version)
+	req.Header.Set("User-Agent", "pocman-tui/"+c.Version)
 	req.Header.Set("Authorization", "Bearer "+
 		base64.RawURLEncoding.EncodeToString([]byte(c.Token)))
 

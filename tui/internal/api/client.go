@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/fressive/pocman/cli/internal"
-	"github.com/fressive/pocman/cli/internal/conf"
 	"github.com/fressive/pocman/common/pkg/api"
+	"github.com/fressive/pocman/tui/internal"
+	"github.com/fressive/pocman/tui/internal/conf"
 )
 
 var apiClient *api.Client
