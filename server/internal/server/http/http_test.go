@@ -111,8 +111,8 @@ func TestTokenAuthMiddleware_MalformedAuthorizationHeader(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer")
 	r.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Fatalf("expected status %d, got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected status %d, got %d", http.StatusBadRequest, rec.Code)
 	}
 
 	var body model.Response[map[string]any]
@@ -120,8 +120,8 @@ func TestTokenAuthMiddleware_MalformedAuthorizationHeader(t *testing.T) {
 		t.Fatalf("failed to decode response body: %v", err)
 	}
 
-	if body.Code != 20000 {
-		t.Fatalf("expected response code 20000, got %d", body.Code)
+	if body.Code != 20001 {
+		t.Fatalf("expected response code 20001, got %d", body.Code)
 	}
 }
 
