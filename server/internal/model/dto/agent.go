@@ -15,6 +15,9 @@ type Agent struct {
 	CPUUsage     float32 `json:"cpu_usage" gorm:"type:decimal(4,2)"`
 	RAMTotal     uint64  `json:"ram_total" gorm:"type:bigint;default:0"`
 	RAMAvailable uint64  `json:"ram_available" gorm:"type:bigint;default:0"`
+	Load1        float32 `json:"load_1" gorm:"type:decimal(4,2)"`
+	Load5        float32 `json:"load_5" gorm:"type:decimal(4,2)"`
+	Load15       float32 `json:"load_15" gorm:"type:decimal(4,2)"`
 
 	LastInit      time.Time `json:"last_init"`
 	LastHeartbeat time.Time `json:"last_heartbeat"`
@@ -45,5 +48,8 @@ func (a Agent) ToModel() commonModel.Agent {
 		RAMTotal:     a.RAMTotal,
 		RAMAvailable: a.RAMAvailable,
 		Uptime:       a.LastHeartbeat.Sub(a.LastInit).Seconds(),
+		Load1:        a.Load1,
+		Load5:        a.Load5,
+		Load15:       a.Load15,
 	}
 }

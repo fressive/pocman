@@ -31,7 +31,7 @@ message HeartbeatRequest {
   float cpu_usage = 2;
   uint64 ram_available = 3;
   float load_1 = 4;
-  float load_2 = 5;
+  float load_5 = 5;
   float load_15 = 6;
 }
 

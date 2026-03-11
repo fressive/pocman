@@ -7,6 +7,7 @@ import (
 
 	"github.com/fressive/pocman/agent/internal/conf"
 	v1 "github.com/fressive/pocman/common/proto/v1"
+	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/v4/cpu"
 	"github.com/shirou/gopsutil/v4/mem"
 	"google.golang.org/grpc/codes"
@@ -17,11 +18,15 @@ func ReportHeartbeat(client *v1.AgentServiceClient) {
 	for {
 		memInfo, _ := mem.VirtualMemory()
 		cpuUsage, _ := cpu.Percent(100*time.Millisecond, false)
+		loadAvg, _ := load.Avg()
 
 		_, err := (*client).Heartbeat(context.Background(), &v1.HeartbeatRequest{
 			AgentId:      conf.AgentConfig.Name,
 			CpuUsage:     float32(cpuUsage[0]),
 			RamAvailable: memInfo.Available,
+			Load_1:       float32(loadAvg.Load1),
+			Load_5:       float32(loadAvg.Load5),
+			Load_15:      float32(loadAvg.Load15),
 		})
 
 		if err != nil {

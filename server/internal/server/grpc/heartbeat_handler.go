@@ -18,6 +18,9 @@ func (s *GRPCServer) Heartbeat(ctx context.Context, req *v1.HeartbeatRequest) (*
 	}).Updates(dto.Agent{
 		CPUUsage:      req.CpuUsage,
 		RAMAvailable:  req.RamAvailable,
+		Load1:         req.Load_1,
+		Load5:         req.Load_5,
+		Load15:        req.Load_15,
 		LastHeartbeat: time.Now(),
 	})
 
