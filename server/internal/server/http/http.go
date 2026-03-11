@@ -21,7 +21,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 			// Bearer xxxxxxxx
 			parts := strings.SplitN(auth, " ", 2)
 			if len(parts) != 2 || strings.TrimSpace(parts[1]) == "" {
-				response.Unauth(ctx, nil)
+				response.Error(ctx, 20001, "fail to decode token")
 				ctx.Abort()
 				return
 			}

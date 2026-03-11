@@ -20,10 +20,6 @@ type APIToken struct {
 }
 
 func (t APIToken) IsExpired() bool {
-	if t.ValidBefore.IsZero() {
-		return false
-	}
-
 	return t.ValidBefore.Compare(time.Now()) == -1
 }
 
@@ -34,14 +30,13 @@ func VerifyToken(token string) error {
 	hash := util.HashToken(token)
 
 	var record APIToken
-	if err := data.DB.Where("hash = ?", hash).First(&record).Error; err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return ErrTokenInvalid
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err
-	}
-
-	if record.Hash != hash {
-		return ErrTokenInvalid
+	err := data.DB.Where("hash = ?", hash).First(&record).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrTokenInvalid
+		} else {
+			return err
+		}
 	}
 
 	if record.IsExpired() {
