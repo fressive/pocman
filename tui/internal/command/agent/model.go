@@ -13,15 +13,14 @@ import (
 	"github.com/samber/lo"
 )
 
-type ListAgentModel struct {
-	ctx    context.Context
-	cancel context.CancelFunc
+type agentModel struct {
+	ctx context.Context
 
 	table table.Model
 	err   error
 }
 
-type listAgentMsg []model.Agent
+type agentMsg []model.Agent
 
 type errMsg struct{ err error }
 
@@ -29,23 +28,21 @@ var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("240"))
 
-func InitListAgentModel(ctx context.Context) ListAgentModel {
-	ctx, cancel := context.WithCancel(ctx)
-	return ListAgentModel{
-		ctx:    ctx,
-		cancel: cancel,
+func initAgentModel(ctx context.Context) agentModel {
+	return agentModel{
+		ctx: ctx,
 	}
 }
 
-func (m ListAgentModel) Init() tea.Cmd {
+func (m agentModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m ListAgentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m agentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case listAgentMsg:
+	case agentMsg:
 		columns := []table.Column{
 			{Title: "ID", Width: 10},
 			{Title: "Status", Width: 10},
@@ -102,7 +99,7 @@ func (m ListAgentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m ListAgentModel) View() tea.View {
+func (m agentModel) View() tea.View {
 	if m.err != nil {
 		return tea.NewView(fmt.Sprintf("\nError: %v\n\n", m.err))
 	}

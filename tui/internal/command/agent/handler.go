@@ -12,7 +12,7 @@ import (
 )
 
 func ListAgent(ctx context.Context, c *cli.Command) error {
-	p := tea.NewProgram(InitListAgentModel(ctx))
+	p := tea.NewProgram(initAgentModel(ctx))
 
 	go func() {
 		for {
@@ -28,7 +28,7 @@ func ListAgent(ctx context.Context, c *cli.Command) error {
 				p.Send(errMsg{err})
 			}
 
-			p.Send(listAgentMsg(agents))
+			p.Send(agentMsg(agents))
 
 			// based on the agent heartbeat report period (5s)
 			time.Sleep(5 * time.Second)
