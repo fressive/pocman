@@ -20,7 +20,7 @@ type Server struct {
 	Token string `mapstructure:"token" yaml:"token"`
 }
 
-var CLIConfig = Config{
+var TUIConfig = Config{
 	Server: &Server{
 		Endpoint: "http://127.0.0.1:5031",
 		Token:    "test-token",

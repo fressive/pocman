@@ -8,6 +8,7 @@ import (
 
 	"github.com/fressive/pocman/tui/internal"
 	"github.com/fressive/pocman/tui/internal/command/agent"
+	"github.com/fressive/pocman/tui/internal/command/config"
 	"github.com/fressive/pocman/tui/internal/conf"
 	"github.com/fressive/pocman/tui/internal/handler"
 	"github.com/urfave/cli/v3"
@@ -19,7 +20,7 @@ func readConfig(ctx context.Context, cmd *cli.Command) (context.Context, error) 
 		return nil, nil
 	}
 
-	// Load CLI configuration
+	// Load CLI config
 	config := cmd.String("config")
 
 	if config == "" {
@@ -35,11 +36,10 @@ func readConfig(ctx context.Context, cmd *cli.Command) (context.Context, error) 
 	slog.Debug("using configuration", "file", config)
 
 	if _, err := os.Stat(config); err == nil {
-		conf.CLIConfig.Load(config)
+		conf.TUIConfig.Load(config)
 	} else if os.IsNotExist(err) {
-		fmt.Println("error: configuration file not found, use `pocman-tui config init` to initialize configuration")
-		os.Exit(1)
-		return nil, err
+		// If config not exists, create it silently with default config
+		conf.TUIConfig.Save(config)
 	} else {
 		return nil, err
 	}
@@ -52,6 +52,7 @@ func main() {
 		Name:    "pocman-tui",
 		Version: internal.CLI_VERSION,
 		Usage:   "a CLI tool for managing Pocman service",
+		Before:  readConfig,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "verbose",
@@ -84,14 +85,12 @@ func main() {
 				Name:    "test",
 				Aliases: []string{"T"},
 				Usage:   "Test the connection to the server",
-				Before:  readConfig,
 				Action:  handler.Test,
 			},
 			{
 				Name:    "agent",
 				Aliases: []string{"a"},
 				Usage:   "Agent related operations",
-				Before:  readConfig,
 				Commands: []*cli.Command{
 					{
 						Name:    "list",
@@ -105,13 +104,12 @@ func main() {
 				Name:    "config",
 				Aliases: []string{"conf"},
 				Usage:   "Configure pocman-tui tool",
-				Action:  handler.Configure,
+				Action:  config.Configure,
 			},
 			{
 				Name:    "vuln",
 				Aliases: []string{"v"},
 				Usage:   "Vulnerability related operations",
-				Before:  readConfig,
 				Commands: []*cli.Command{
 					{
 						Name:    "new",
@@ -138,7 +136,6 @@ func main() {
 				Name:    "task",
 				Aliases: []string{"t"},
 				Usage:   "Manage POC reproduction tasks",
-				Before:  readConfig,
 				Commands: []*cli.Command{
 					{
 						Name:    "new",
