@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"context"
 	"fmt"
 	"math"
 	"time"
@@ -14,8 +13,6 @@ import (
 )
 
 type agentModel struct {
-	ctx context.Context
-
 	table table.Model
 	err   error
 }
@@ -28,10 +25,8 @@ var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("240"))
 
-func initAgentModel(ctx context.Context) agentModel {
-	return agentModel{
-		ctx: ctx,
-	}
+func initAgentModel() agentModel {
+	return agentModel{}
 }
 
 func (m agentModel) Init() tea.Cmd {

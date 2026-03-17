@@ -12,7 +12,7 @@ import (
 )
 
 func ListAgent(ctx context.Context, c *cli.Command) error {
-	p := tea.NewProgram(initAgentModel(ctx))
+	p := tea.NewProgram(initAgentModel())
 
 	go func() {
 		for {
