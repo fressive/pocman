@@ -15,8 +15,8 @@ func GetClient() (*api.Client, error) {
 		var err error
 
 		apiClient, err = api.NewClient(
-			conf.CLIConfig.Server.Endpoint,
-			conf.CLIConfig.Server.Token,
+			conf.TUIConfig.Server.Endpoint,
+			conf.TUIConfig.Server.Token,
 			internal.CLI_VERSION,
 		)
 
