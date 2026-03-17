@@ -9,6 +9,7 @@ import (
 	"github.com/fressive/pocman/tui/internal"
 	"github.com/fressive/pocman/tui/internal/command/agent"
 	"github.com/fressive/pocman/tui/internal/command/config"
+	"github.com/fressive/pocman/tui/internal/command/test"
 	"github.com/fressive/pocman/tui/internal/conf"
 	"github.com/fressive/pocman/tui/internal/handler"
 	"github.com/urfave/cli/v3"
@@ -85,7 +86,7 @@ func main() {
 				Name:    "test",
 				Aliases: []string{"T"},
 				Usage:   "Test the connection to the server",
-				Action:  handler.Test,
+				Action:  test.TestConnection,
 			},
 			{
 				Name:    "agent",
